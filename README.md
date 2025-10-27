@@ -1,7 +1,7 @@
 # 🗂️ 案件カルテ v2 — Drive/URL/画像リンク & アイディアボード
 
 病院カルテっぽい進捗管理に **資料リンク管理** と **アイディアボード** を追加。  
-- Google Drive/Notion/任意URLを保存
+- Google Drive/Notion/任意URLを保存.
 - ローカルファイルを `uploads/` にアップロード
 - 参考URLや画像をPinterest的に集約、ピン留め可能
 - 自然文っぽい横断検索（projects/notes/resources/ideas を一括）

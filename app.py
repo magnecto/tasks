@@ -207,30 +207,52 @@ def run_semanticish_search(q: str) -> pd.DataFrame:
         return out
     return pd.DataFrame()
 
-def project_form(existing: Optional[dict]=None):
+# 置き換え：旧) def project_form(existing: Optional[dict]=None):
+def project_form(key_prefix: str, existing: Optional[dict]=None):
     col1, col2 = st.columns(2)
-    title = col1.text_input("案件名 *", value=(existing.get("title") if existing else ""))
-    client = col2.text_input("クライアント/関係者", value=(existing.get("client") if existing else ""))
+    title = col1.text_input("案件名 *",
+                            value=(existing.get("title") if existing else ""),
+                            key=f"{key_prefix}_title")
+    client = col2.text_input("クライアント/関係者",
+                             value=(existing.get("client") if existing else ""),
+                             key=f"{key_prefix}_client")
+
     col3, col4, col5 = st.columns(3)
-    status = col3.selectbox("ステータス", STATUS_OPTIONS, index=(STATUS_OPTIONS.index(existing["status"]) if existing else 1))
-    priority = col4.selectbox("優先度", PRIORITY_OPTIONS, index=(PRIORITY_OPTIONS.index(existing["priority"]) if existing else 1))
-    owner = col5.text_input("担当", value=(existing.get("owner") if existing else ""))
+    status = col3.selectbox("ステータス", STATUS_OPTIONS,
+                            index=(STATUS_OPTIONS.index(existing["status"]) if existing else 1),
+                            key=f"{key_prefix}_status")
+    priority = col4.selectbox("優先度", PRIORITY_OPTIONS,
+                              index=(PRIORITY_OPTIONS.index(existing["priority"]) if existing else 1),
+                              key=f"{key_prefix}_priority")
+    owner = col5.text_input("担当",
+                            value=(existing.get("owner") if existing else ""),
+                            key=f"{key_prefix}_owner")
+
     col6, col7 = st.columns(2)
-    start_date = col6.date_input("開始日", value=(pd.to_datetime(existing["start_date"]).date() if existing and existing.get("start_date") else None))
-    due_date = col7.date_input("期限", value=(pd.to_datetime(existing["due_date"]).date() if existing and existing.get("due_date") else None))
-    description = st.text_area("概要・メモ", value=(existing.get("description") if existing else ""), height=100)
-    archived = st.checkbox("アーカイブ", value=(bool(existing["archived"]) if existing else False))
+    sd = pd.to_datetime(existing["start_date"]).date() if existing and existing.get("start_date") else None
+    dd = pd.to_datetime(existing["due_date"]).date() if existing and existing.get("due_date") else None
+    start_date = col6.date_input("開始日", value=sd, key=f"{key_prefix}_start")
+    due_date   = col7.date_input("期限",   value=dd, key=f"{key_prefix}_due")
+
+    description = st.text_area("概要・メモ",
+                               value=(existing.get("description") if existing else ""),
+                               height=100, key=f"{key_prefix}_desc")
+    archived = st.checkbox("アーカイブ",
+                           value=(bool(existing["archived"]) if existing else False),
+                           key=f"{key_prefix}_arch")
+
     return {
-        "title": title.strip(),
-        "client": client.strip() or None,
+        "title": (title or "").strip(),
+        "client": (client or "").strip() or None,
         "status": status,
         "priority": priority,
-        "owner": owner.strip() or None,
+        "owner": (owner or "").strip() or None,
         "start_date": start_date.isoformat() if start_date else None,
-        "due_date": due_date.isoformat() if due_date else None,
-        "description": description.strip() or None,
+        "due_date":   due_date.isoformat()   if due_date   else None,
+        "description": (description or "").strip() or None,
         "archived": 1 if archived else 0,
     }
+
 
 def page_projects():
     st.subheader("案件")

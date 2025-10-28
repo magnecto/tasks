@@ -299,9 +299,16 @@ def page_projects():
     if all_df.empty:
         st.info("編集対象の案件がありません。")
         return
-    pid = st.selectbox("案件IDを選択", all_df["id"].tolist(), index=0, format_func=lambda _id: f"{_id}: {all_df.set_index('id').loc[_id, 'title']}")
-    existing = all_df.set_index("id").loc[pid].to_dict()
-    edit_rec = project_form(existing)
+    # --- 新規作成ブロック ---
+new_rec = project_form("create")  # ← 追加
+
+# --- 編集ブロック ---
+pid = st.selectbox("案件IDを選択", all_df["id"].tolist(),
+                   index=0, key="edit_pid",
+                   format_func=lambda _id: f"{_id}: {all_df.set_index('id').loc[_id, 'title']}")
+existing = all_df.set_index("id").loc[pid].to_dict()
+edit_rec = project_form(f"edit_{pid}", existing)  # ← 追加
+
     if st.button("更新", type="secondary"):
         fields = ["title","client","status","priority","owner","start_date","due_date","description","archived"]
         sets = ", ".join([f"{f}=?" for f in fields])
